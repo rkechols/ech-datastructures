@@ -14,6 +14,8 @@ def assert_empty(h: Heap):
         h.peek()
     with pytest.raises(IndexError):
         h.pop()
+    with pytest.raises(IndexError):
+        h.pop_add(5)
 
 
 def test_empty_heap():
@@ -26,7 +28,7 @@ def _heapify_pop_all(vals: Sequence):
     h = Heap(vals)
     assert vals == vals_copy, "making a heap from a list should not change the original list"
     count_original = Counter(vals)
-    count_heap = Counter(h._data)
+    count_heap = Counter(h.data)
     assert count_original == count_heap, "the heap does not have the same elements as the original list"
     pop_order = []
     n_remaining = len(vals)
@@ -86,7 +88,7 @@ def test_update_pop_all():
     joined = vals + vals2
     assert len(h) == len(joined)
     count_joined = Counter(joined)
-    count_heap = Counter(h._data)
+    count_heap = Counter(h.data)
     assert count_joined == count_heap, "the updated heap does not have the same elements as the joined list"
     pop_order = []
     while not h.is_empty():
@@ -123,7 +125,7 @@ def test_add_peek_pop():
     assert len(h) == 11
 
 
-def test_pop_add():
+def test_add_pop():
     h = Heap(range(10))
     assert len(h) == 10
     assert h.peek() == 0
@@ -140,5 +142,26 @@ def test_pop_add():
     assert len(h) == 10
     assert h.peek() == 2
     assert h.add_pop(5) == 2
+    assert len(h) == 10
+    assert h.peek() == 3
+
+
+def test_pop_add():
+    h = Heap(range(10))
+    assert len(h) == 10
+    assert h.peek() == 0
+    assert h.pop_add(2) == 0
+    assert len(h) == 10
+    assert h.peek() == 1
+    assert h.pop_add(-2) == 1
+    assert len(h) == 10
+    assert h.peek() == -2
+    assert h.pop_add(5) == -2
+    assert len(h) == 10
+    assert h.peek() == 2
+    assert h.pop_add(5) == 2
+    assert len(h) == 10
+    assert h.peek() == 2
+    assert h.pop_add(5) == 2
     assert len(h) == 10
     assert h.peek() == 3
