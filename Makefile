@@ -1,8 +1,8 @@
-.PHONY: build publish-test install lint test
+.PHONY: build publish-test install lint test clean
 
 build:
-	rm -r dist/
-	rm -r build/
+	rm -rf dist/
+	rm -rf build/
 	python -m build --sdist
 	python -m build --wheel
 	twine check dist/*
@@ -20,3 +20,8 @@ lint:
 
 test:
 	pytest
+
+clean:
+	rm -rf dist/
+	rm -rf build/
+	rm -rf .pytest_cache/
