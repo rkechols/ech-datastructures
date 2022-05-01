@@ -67,6 +67,18 @@ def test_heapify_pop_all_reverse():
     assert_empty(h)
 
 
+def test_heapify_pop_all_fun_key():
+    vals = ["x" * 30, "hi", "roate", ".", "philanthropy", "cats", ""]
+    vals_copy = copy.copy(vals)
+    h = Heap(vals, key=lambda x: len(x))
+    assert vals == vals_copy, "making a heap from a list should not change the original list"
+    pop_order = []
+    while not h.is_empty():
+        pop_order.append(h.pop())
+    assert pop_order == sorted(vals, key=lambda x: len(x)), "values did not pop in the correct order"
+    assert_empty(h)
+
+
 def test_update_pop_all():
     vals = [5, 4, 7, 8, 4, 6, 2, 7, 1]
     h = Heap(vals)
@@ -113,4 +125,22 @@ def test_add_peek_pop():
     assert len(h) == 11
 
 
-# TODO: test pop_add
+def test_pop_add():
+    h = Heap(range(10))
+    assert len(h) == 10
+    assert h.peek() == 0
+    assert h.pop_add(2) == 0
+    assert len(h) == 10
+    assert h.peek() == 1
+    assert h.pop_add(-2) == 1
+    assert len(h) == 10
+    assert h.peek() == -2
+    assert h.pop_add(5) == -2
+    assert len(h) == 10
+    assert h.peek() == 2
+    assert h.pop_add(5) == 2
+    assert len(h) == 10
+    assert h.peek() == 2
+    assert h.pop_add(5) == 2
+    assert len(h) == 10
+    assert h.peek() == 3
