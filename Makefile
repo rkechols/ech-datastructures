@@ -1,6 +1,8 @@
 .PHONY: build publish-test install lint test
 
 build:
+	rm -r dist/
+	rm -r build/
 	python -m build --sdist
 	python -m build --wheel
 	twine check dist/*
