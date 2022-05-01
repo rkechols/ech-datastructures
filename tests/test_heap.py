@@ -14,8 +14,6 @@ def assert_empty(h: Heap):
         h.peek()
     with pytest.raises(IndexError):
         h.pop()
-    with pytest.raises(IndexError):
-        h.pop_add(5)
 
 
 def test_empty_heap():
@@ -129,18 +127,18 @@ def test_pop_add():
     h = Heap(range(10))
     assert len(h) == 10
     assert h.peek() == 0
-    assert h.pop_add(2) == 0
+    assert h.add_pop(2) == 0
     assert len(h) == 10
     assert h.peek() == 1
-    assert h.pop_add(-2) == 1
+    assert h.add_pop(-2) == -2
     assert len(h) == 10
-    assert h.peek() == -2
-    assert h.pop_add(5) == -2
-    assert len(h) == 10
-    assert h.peek() == 2
-    assert h.pop_add(5) == 2
+    assert h.peek() == 1
+    assert h.add_pop(5) == 1
     assert len(h) == 10
     assert h.peek() == 2
-    assert h.pop_add(5) == 2
+    assert h.add_pop(5) == 2
+    assert len(h) == 10
+    assert h.peek() == 2
+    assert h.add_pop(5) == 2
     assert len(h) == 10
     assert h.peek() == 3

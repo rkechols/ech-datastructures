@@ -22,18 +22,22 @@ class Heap(Generic[T]):
             self._key = key
 
     def peek(self) -> T:
-        # TODO
-        raise NotImplementedError
+        try:
+            return self._data[0]
+        except IndexError as e:
+            raise IndexError("peek from empty Heap") from e
 
     def pop(self) -> T:
-        # TODO
-        raise NotImplementedError
+        try:
+            return heapq.heappop(self._data)
+        except IndexError as e:
+            raise IndexError("pop from empty Heap") from e
 
     def add(self, new_item: T):
         # TODO
         raise NotImplementedError
 
-    def pop_add(self, new_item: T) -> T:
+    def add_pop(self, new_item: T) -> T:
         # TODO
         raise NotImplementedError
 
