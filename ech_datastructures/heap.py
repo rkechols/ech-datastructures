@@ -26,13 +26,12 @@ class _HeapElem(Generic[T]):
     def __lt__(self, other: "_HeapElem[T]") -> bool:
         """
         Comparison function used by heapq to do sorting
-        Returning `True` means THIS comes first.
+        Returning `True` means `self` comes before `other`.
         """
         natural = self.key(self.val) < self.key(other.val)
         if self.reverse:
             return not natural
-        else:
-            return natural
+        return natural
 
 
 class Heap(Generic[T]):
