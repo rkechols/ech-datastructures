@@ -32,7 +32,8 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Utilities"
     ],
-    keywords="data structure structures datastructure datastructures tool tools util utils utility utilities",
+    keywords="data structure structures datastructure datastructures tool tools "
+             "util utils utility utilities",
     python_requires=">=3.8",
     packages=find_packages(
         include=[
