@@ -26,21 +26,19 @@ setup(
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Utilities"
     ],
-    keywords="data structure structures datastructure datastructures tool tools util utils utility utilities",
-    python_requires=">=3.6",
+    keywords="data structure structures datastructure datastructures tool tools "
+             "util utils utility utilities",
+    python_requires=">=3.8",
     packages=find_packages(
         include=[
             "ech_datastructures"
         ]
     ),
     # install_requires=[],
-    
 )
