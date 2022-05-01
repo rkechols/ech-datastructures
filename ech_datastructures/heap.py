@@ -1,5 +1,5 @@
 import heapq
-from typing import Any, Callable, Iterable, TypeVar, Generic
+from typing import Any, Callable, Generic, Iterable, TypeVar
 
 
 T = TypeVar("T")
@@ -22,19 +22,24 @@ class Heap(Generic[T]):
             self._key = key
 
     def peek(self) -> T:
-        pass  # TODO
+        # TODO
+        raise NotImplementedError
 
     def pop(self) -> T:
-        pass  # TODO
+        # TODO
+        raise NotImplementedError
 
     def add(self, new_item: T):
-        pass  # TODO
+        # TODO
+        raise NotImplementedError
 
     def pop_add(self, new_item: T) -> T:
-        pass  # TODO
+        # TODO
+        raise NotImplementedError
 
     def update(self, new_items: Iterable[T]):
-        pass  # TODO
+        # TODO
+        raise NotImplementedError
 
     def __len__(self) -> int:
         return len(self._data)
