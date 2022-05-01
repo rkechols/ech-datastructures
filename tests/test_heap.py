@@ -58,7 +58,7 @@ def test_heapify_pop_all_letters():
 def test_heapify_pop_all_reverse():
     vals = [5, 4, 7, 8, 4, 6, 2, 7, 1]
     vals_copy = copy.copy(vals)
-    h = Heap(vals, key=lambda x: -1 * x)
+    h = Heap(vals, reverse=True)
     assert vals == vals_copy, "making a heap from a list should not change the original list"
     pop_order = []
     while not h.is_empty():
