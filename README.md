@@ -10,15 +10,13 @@ Comprehensive package of Python-native datastructures.
   - tree set (AVL)
   - tree map (AVL)
   - ordered list (?) = binary tree (AVL) with duplicates (counts)
-  - heap (AKA priority queue)
   - trie
   - disjoint set (forest)
   - graph (weighted or not, directed or not, sparse or not)
 
 
 ### Implemented Datastructures:
-
-(None yet)
+  - Heap (AKA priority queue)
 
 
 ### Will Not Implement:
