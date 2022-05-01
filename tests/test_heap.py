@@ -85,4 +85,32 @@ def test_update_pop_all():
     assert_empty(h)
 
 
-# TODO: test peek, add, pop_add, clear
+def test_clear():
+    vals = [5, 4, 7, 8, 4, 6, 2, 7, 1]
+    h = Heap(vals)
+    assert len(h) == len(vals)
+    h.clear()
+    assert_empty(h)
+
+
+def test_add_peek_pop():
+    h = Heap(range(10))
+    assert len(h) == 10
+    assert h.peek() == 0
+    assert len(h) == 10
+    assert h.pop() == 0
+    assert len(h) == 9
+    assert h.pop() == 1
+    assert len(h) == 8
+    h.add(-5)
+    assert h.peek() == -5
+    assert len(h) == 9
+    h.add(-2)
+    assert h.peek() == -5
+    assert len(h) == 10
+    h.add(-30)
+    assert h.peek() == -30
+    assert len(h) == 11
+
+
+# TODO: test pop_add
