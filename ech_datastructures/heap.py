@@ -40,6 +40,8 @@ class Heap(Generic[T]):
     MinHeap or MaxHeap, however you'd like.
     AKA Priority Queue.
 
+    Allows duplicate / equivalent values.
+
     Elements are not stored in fully sorted order, but as they are retrieved using
     `pop`, they come out sorted.
 
