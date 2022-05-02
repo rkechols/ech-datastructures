@@ -1,5 +1,5 @@
 import heapq
-from typing import Any, Callable, Generic, Iterable, TypeVar, List
+from typing import Any, Callable, Generic, Iterable, List, TypeVar
 
 
 T = TypeVar("T")

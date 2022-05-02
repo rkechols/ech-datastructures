@@ -8,7 +8,6 @@ Comprehensive package of Python-native datastructures.
 
 ### Planned Datastructures:
   - tree set (AVL)
-  - tree map (AVL)
   - ordered list (?) = binary tree (AVL) with duplicates (counts)
   - trie
   - disjoint set (forest)
@@ -17,6 +16,7 @@ Comprehensive package of Python-native datastructures.
 
 ### Implemented Datastructures:
   - Heap (AKA priority queue)
+  - tree map (AVL) - **in progress**
 
 
 ### Will Not Implement:
