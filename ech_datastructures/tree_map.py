@@ -55,4 +55,24 @@ class TreeMap(Generic[K, V]):
         # TODO
         raise NotImplementedError
 
-    # TODO
+    def __getitem__(self, k: K) -> V:
+        # TODO
+        raise NotImplementedError
+
+    def __iter__(self):
+        # TODO
+        raise NotImplementedError
+
+    def __len__(self) -> int:
+        # TODO
+        raise NotImplementedError
+
+    def __ne__(self, other: Any) -> bool:
+        # TODO
+        raise NotImplementedError
+
+    def __repr__(self) -> str:
+        # TODO
+        raise NotImplementedError
+
+    __hash__ = None
