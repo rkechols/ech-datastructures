@@ -1,5 +1,22 @@
-from ech_datastructures import AVLTree
+from typing import List, Set, Tuple
+import copy
+
 import pytest
+
+from ech_datastructures import AVLTree
+
+
+@pytest.fixture(scope="function")
+def nums() -> List[int]:
+    return [5, 4, 7, 8, 4, 6, 2, 7, 1]
+
+
+@pytest.fixture(scope="function")
+def avl_filled(nums: List[int]) -> Tuple[AVLTree, Set[int]]:
+    avl = AVLTree()
+    for num in nums:
+        avl.add(num)
+    return avl, set(nums)
 
 
 def assert_empty(avl: AVLTree):
@@ -29,5 +46,20 @@ def test_add_many_nums():
         assert list(avl) == sorted(added), \
             "iterating over tree should return numbers in order, and with no duplicates"
 
+
+def test_remove_many_nums(avl_filled: Tuple[AVLTree, Set[int]]):
+    avl, nums_original = avl_filled
+    nums_remaining = copy.copy(nums_original)
+    bogus = max(nums_remaining) + 2
+    while len(nums_remaining) > 0:
+        num = nums_remaining.pop()
+        assert avl.remove(num), "should return True to mark successful removal"
+        assert len(avl) == len(nums_remaining)
+        assert list(avl) == sorted(nums_remaining), \
+            "iterating over tree should return numbers in order, and with no duplicates"
+        assert not avl.remove(bogus), "should return False to mark failed removal"
+    assert_empty(avl)
+    for num in nums_original:
+        assert not avl.remove(num), "should return False to mark failed removal"
 
 # TODO: tests about balance?

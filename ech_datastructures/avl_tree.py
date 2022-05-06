@@ -20,8 +20,7 @@ class _AVLTreeNode(Generic[T]):
         self.parent = parent
         self._key = key
 
-    def find(self, item: T, _item_key: Any = None) -> Optional["_AVLTreeNode"]:
-        item_key = _item_key if _item_key is not None else self._key(item)
+    def find(self, item: T, item_key: Any = None) -> Optional["_AVLTreeNode"]:
         self_key = self._key(self.value)
         # compare the keys
         if item_key == self_key:
@@ -47,8 +46,7 @@ class _AVLTreeNode(Generic[T]):
             for descendant in self.right:
                 yield descendant
 
-    def add(self, item: T, _item_key: Any = None) -> bool:
-        item_key = _item_key if _item_key is not None else self._key(item)
+    def add(self, item: T, item_key: Any) -> bool:
         self_key = self._key(self.value)
         # compare the keys
         if item_key == self_key:
@@ -68,6 +66,10 @@ class _AVLTreeNode(Generic[T]):
                 return True
             # keep walking
             return self.right.add(item, item_key)
+
+    def remove(self, item: T, item_key: Any) -> bool:
+        # TODO
+        raise NotImplementedError
 
 
 class AVLTree(Generic[T]):
@@ -99,16 +101,27 @@ class AVLTree(Generic[T]):
             self._root = _AVLTreeNode(item, key=self._key)
             success = True
         else:
-            success = self._root.add(item)
+            success = self._root.add(item, self._key(item))
         if success:
             self._count += 1
         return success
 
     def remove(self, item: T) -> bool:
         if self._root is None:
+            # nothing to remove
             return False
-        # TODO
-        raise NotImplementedError
+        # we need to check if we're removing the root
+        item_key = self._key(item)
+        root_key = self._key(self._root)
+        # removing the root is special if it has no children
+        if item_key == root_key and self._root.left is None and self._root.right is None:
+            self._root = None
+            success = True
+        else:
+            success = self._root.remove(item, item_key)
+        if success:
+            self._count -= 1
+        return success
 
     # TODO: bulk operations? https://en.wikipedia.org/wiki/AVL_tree#:~:text=log%20n)%20time.-,Set%20operations%20and%20bulk%20operations,-%5Bedit%5D
 
