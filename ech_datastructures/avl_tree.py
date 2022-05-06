@@ -80,11 +80,35 @@ class AVLTree(Generic[T]):
         # TODO
         raise NotImplementedError
 
-    def clear(self):
-        self._root = None
-        self._count = 0
-
     # TODO: bulk operations? https://en.wikipedia.org/wiki/AVL_tree#:~:text=log%20n)%20time.-,Set%20operations%20and%20bulk%20operations,-%5Bedit%5D
 
     def __len__(self) -> int:
+        """
+        Check the number of elements in the AVLTree.
+
+        Returns
+        -------
+        int - number of elements in the AVLTree.
+        """
         return self._count
+
+    def is_empty(self) -> bool:
+        """
+        Check if the AVLTree is empty or not.
+
+        Returns
+        -------
+        bool - `True` if there is no data in the AVLTree, `False` otherwise.
+        """
+        return self.__len__() == 0
+
+    def clear(self):
+        """
+        Empty all data from the AVLTree.
+
+        Returns
+        -------
+        None
+        """
+        self._root = None
+        self._count = 0
