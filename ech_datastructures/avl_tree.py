@@ -68,8 +68,27 @@ class _AVLTreeNode(Generic[T]):
             return self.right.add(item, item_key)
 
     def remove(self, item: T, item_key: Any) -> bool:
-        # TODO
-        raise NotImplementedError
+        self_key = self._key(self.value)
+        # compare the keys
+        if item_key == self_key:
+            # found it!
+            # TODO
+            raise NotImplementedError(self.value)
+        elif item_key < self_key:
+            if self.left is None:
+                # dead end
+                return False
+            # keep walking
+            return self.left.remove(item, item_key)
+        else:  # item_key > self_key
+            if self.right is None:
+                # dead end
+                return False
+            # keep walking
+            return self.right.remove(item, item_key)
+
+    def __repr__(self) -> str:
+        return f"_AVLTreeNode({self.value})"
 
 
 class AVLTree(Generic[T]):
@@ -117,7 +136,7 @@ class AVLTree(Generic[T]):
         if item_key == root_key and self._root.left is None and self._root.right is None:
             self._root = None
             success = True
-        else:
+        else:  # not any special situation
             success = self._root.remove(item, item_key)
         if success:
             self._count -= 1
