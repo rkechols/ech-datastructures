@@ -1,5 +1,5 @@
+import random
 from typing import List, Set, Tuple
-import copy
 
 import pytest
 
@@ -49,10 +49,13 @@ def test_add_many_nums():
 
 def test_remove_many_nums(avl_filled: Tuple[AVLTree, Set[int]]):
     avl, nums_original = avl_filled
-    nums_remaining = copy.copy(nums_original)
+    nums_remaining = list(nums_original)
+    random.seed(42)
+    random.shuffle(nums_remaining)
     bogus = max(nums_remaining) + 2
     while len(nums_remaining) > 0:
-        num = nums_remaining.pop()
+        num = nums_remaining[-1]
+        del nums_remaining[-1]
         assert avl.remove(num), "should return True to mark successful removal"
         assert len(avl) == len(nums_remaining)
         assert list(avl) == sorted(nums_remaining), \
