@@ -20,8 +20,8 @@ class _AVLTreeNode(Generic[T]):
         self.parent = parent
         self._key = key
 
-    def find(self, item: T) -> Optional["_AVLTreeNode"]:
-        item_key = self._key(item)
+    def find(self, item: T, _item_key: Any = None) -> Optional["_AVLTreeNode"]:
+        item_key = _item_key if _item_key is not None else self._key(item)
         self_key = self._key(self.value)
         # compare the keys
         if item_key == self_key:
@@ -31,12 +31,12 @@ class _AVLTreeNode(Generic[T]):
             # go left (if we can)
             if self.left is None:
                 return None  # dead end
-            return self.left.find(item)
+            return self.left.find(item, item_key)
         else:  # item_key > self_key
             # go right (if we can)
             if self.right is None:
                 return None  # dead end
-            return self.right.find(item)
+            return self.right.find(item, item_key)
 
     def __iter__(self) -> Generator["_AVLTreeNode[T]", None, None]:
         if self.left is not None:
@@ -46,6 +46,28 @@ class _AVLTreeNode(Generic[T]):
         if self.right is not None:
             for descendant in self.right:
                 yield descendant
+
+    def add(self, item: T, _item_key: Any = None) -> bool:
+        item_key = _item_key if _item_key is not None else self._key(item)
+        self_key = self._key(self.value)
+        # compare the keys
+        if item_key == self_key:
+            # duplicate
+            return False
+        elif item_key < self_key:
+            if self.left is None:
+                # found the spot to add it
+                self.left = _AVLTreeNode(item, parent=self, key=self._key)
+                return True
+            # keep walking
+            return self.left.add(item, item_key)
+        else:  # item_key > self_key
+            if self.right is None:
+                # found the spot to add it
+                self.right = _AVLTreeNode(item, parent=self, key=self._key)
+                return True
+            # keep walking
+            return self.right.add(item, item_key)
 
 
 class AVLTree(Generic[T]):
@@ -73,10 +95,18 @@ class AVLTree(Generic[T]):
             yield descendant.value
 
     def add(self, item: T) -> bool:
-        # TODO
-        raise NotImplementedError
+        if self._root is None:
+            self._root = _AVLTreeNode(item, key=self._key)
+            success = True
+        else:
+            success = self._root.add(item)
+        if success:
+            self._count += 1
+        return success
 
     def remove(self, item: T) -> bool:
+        if self._root is None:
+            return False
         # TODO
         raise NotImplementedError
 
