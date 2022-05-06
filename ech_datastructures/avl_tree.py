@@ -5,18 +5,38 @@ T = TypeVar("T")
 
 
 class _AVLTreeNode(Generic[T]):
-    __slots__ = "value", "left", "right", "parent"
+    __slots__ = "value", "left", "right", "parent", "_key"
 
     def __init__(self,
                  value: T,
                  *,
                  left: "_AVLTreeNode[T]" = None,
                  right: "_AVLTreeNode[T]" = None,
-                 parent: "_AVLTreeNode[T]" = None):
+                 parent: "_AVLTreeNode[T]" = None,
+                 key: Callable[[T], Any]):
         self.value = value
         self.left = left
         self.right = right
         self.parent = parent
+        self._key = key
+
+    def find(self, item: T) -> Optional["_AVLTreeNode"]:
+        item_key = self._key(item)
+        self_key = self._key(self.value)
+        # compare the keys
+        if item_key == self_key:
+            # found it!
+            return self
+        elif item_key < self_key:
+            # go left (if we can)
+            if self.left is None:
+                return None  # dead end
+            return self.left.find(item)
+        else:  # item_key > self_key
+            # go right (if we can)
+            if self.right is None:
+                return None  # dead end
+            return self.right.find(item)
 
     def __iter__(self) -> Generator["_AVLTreeNode[T]", None, None]:
         if self.left is not None:
@@ -42,26 +62,12 @@ class AVLTree(Generic[T]):
         return self._find(item) is not None
 
     def _find(self, item: T) -> Optional["_AVLTreeNode"]:
-        item_key = self._key(item)
-        current = self._root
-        while current is not None:
-            # do a comparison against the current node
-            self_key = self._key(current.value)
-            if item_key == self_key:
-                # found it!
-                return current
-            elif item_key < self_key:
-                # "less than" means left
-                current = current.left
-            else:  # item_key > self_key
-                # "greater than" means right
-                current = current.right
-        # dead end
-        return None
+        if self._root is None:
+            return None
+        return self._root.find(item)
 
     def __iter__(self) -> Generator[T, None, None]:
         if self._root is None:
             return
-        # go all the way to the left
         for descendant in self._root:
             yield descendant.value
