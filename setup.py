@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="ech-datastructures",
-    version="0.1.2",
+    version="0.1.3",
     description="Comprehensive package of Python-native datastructures.",
     long_description=readme_md,
     long_description_content_type="text/markdown",
@@ -36,9 +36,7 @@ setup(
              "util utils utility utilities",
     python_requires=">=3.8",
     packages=find_packages(
-        include=[
-            "ech_datastructures"
-        ]
+        exclude=["tests"]
     ),
     # install_requires=[],
 )
