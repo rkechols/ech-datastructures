@@ -14,6 +14,7 @@ class _HeapElem(Generic[T]):
 
     def __init__(self,
                  val: T,
+                 *,
                  key: Callable[[T], Any],
                  reverse: bool):
         """
@@ -50,6 +51,7 @@ class Heap(Generic[T]):
 
     def __init__(self,
                  data: Iterable[T] = None,
+                 *,
                  key: Callable[[T], Any] = None,
                  reverse: bool = False):
         """
@@ -76,7 +78,7 @@ class Heap(Generic[T]):
         if data is None:
             self._data = []
         else:
-            self._data = [_HeapElem(x, self._key, self._reverse) for x in data]
+            self._data = [_HeapElem(x, key=self._key, reverse=self._reverse) for x in data]
             heapq.heapify(self._data)
 
     @property
@@ -137,7 +139,7 @@ class Heap(Generic[T]):
         -------
         None
         """
-        heapq.heappush(self._data, _HeapElem(new_item, self._key, self._reverse))
+        heapq.heappush(self._data, _HeapElem(new_item, key=self._key, reverse=self._reverse))
 
     def add_pop(self, new_item: T) -> T:
         """
@@ -152,7 +154,7 @@ class Heap(Generic[T]):
         -------
         T - popped item.
         """
-        return heapq.heappushpop(self._data, _HeapElem(new_item, self._key, self._reverse)).val
+        return heapq.heappushpop(self._data, _HeapElem(new_item, key=self._key, reverse=self._reverse)).val
 
     def pop_add(self, new_item: T) -> T:
         """
@@ -172,7 +174,7 @@ class Heap(Generic[T]):
         IndexError - Heap was empty at the start of the operation; nothing to pop.
         """
         try:
-            return heapq.heapreplace(self._data, _HeapElem(new_item, self._key, self._reverse)).val
+            return heapq.heapreplace(self._data, _HeapElem(new_item, key=self._key, reverse=self._reverse)).val
         except IndexError as e:
             raise IndexError("pop_add from empty Heap") from e
 
