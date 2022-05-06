@@ -154,7 +154,10 @@ class Heap(Generic[T]):
         -------
         T - popped item.
         """
-        return heapq.heappushpop(self._data, _HeapElem(new_item, key=self._key, reverse=self._reverse)).val
+        return heapq.heappushpop(
+            self._data,
+            _HeapElem(new_item, key=self._key, reverse=self._reverse)
+        ).val
 
     def pop_add(self, new_item: T) -> T:
         """
@@ -174,7 +177,10 @@ class Heap(Generic[T]):
         IndexError - Heap was empty at the start of the operation; nothing to pop.
         """
         try:
-            return heapq.heapreplace(self._data, _HeapElem(new_item, key=self._key, reverse=self._reverse)).val
+            return heapq.heapreplace(
+                self._data,
+                _HeapElem(new_item, key=self._key, reverse=self._reverse)
+            ).val
         except IndexError as e:
             raise IndexError("pop_add from empty Heap") from e
 
