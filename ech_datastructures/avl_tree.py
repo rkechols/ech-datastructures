@@ -71,3 +71,20 @@ class AVLTree(Generic[T]):
             return
         for descendant in self._root:
             yield descendant.value
+
+    def add(self, item: T) -> bool:
+        # TODO
+        raise NotImplementedError
+
+    def remove(self, item: T) -> bool:
+        # TODO
+        raise NotImplementedError
+
+    def clear(self):
+        self._root = None
+        self._count = 0
+
+    # TODO: bulk operations? https://en.wikipedia.org/wiki/AVL_tree#:~:text=log%20n)%20time.-,Set%20operations%20and%20bulk%20operations,-%5Bedit%5D
+
+    def __len__(self) -> int:
+        return self._count
