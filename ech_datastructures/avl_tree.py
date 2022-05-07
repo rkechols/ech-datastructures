@@ -26,16 +26,16 @@ class _AVLTreeNode(Generic[T]):
         if item_key == self_key:
             # found it!
             return self
-        elif item_key < self_key:
+        if item_key < self_key:
             # go left (if we can)
             if self.left is None:
                 return None  # dead end
             return self.left.find(item, item_key)
-        else:  # item_key > self_key
-            # go right (if we can)
-            if self.right is None:
-                return None  # dead end
-            return self.right.find(item, item_key)
+        # else:  # item_key > self_key
+        # go right (if we can)
+        if self.right is None:
+            return None  # dead end
+        return self.right.find(item, item_key)
 
     def __iter__(self) -> Generator["_AVLTreeNode[T]", None, None]:
         if self.left is not None:
@@ -52,21 +52,22 @@ class _AVLTreeNode(Generic[T]):
         if item_key == self_key:
             # duplicate
             return False
-        elif item_key < self_key:
+        if item_key < self_key:
             if self.left is None:
                 # found the spot to add it
                 self.left = _AVLTreeNode(item, parent=self, key=self._key)
                 return True
             # keep walking
             return self.left.add(item, item_key)
-        else:  # item_key > self_key
-            if self.right is None:
-                # found the spot to add it
-                self.right = _AVLTreeNode(item, parent=self, key=self._key)
-                return True
-            # keep walking
-            return self.right.add(item, item_key)
+        # else:  # item_key > self_key
+        if self.right is None:
+            # found the spot to add it
+            self.right = _AVLTreeNode(item, parent=self, key=self._key)
+            return True
+        # keep walking
+        return self.right.add(item, item_key)
 
+    # pylint: disable=too-many-branches
     def remove(self, item: T, item_key: Any) -> bool:
         self_key = self._key(self.value)
         # compare the keys
@@ -109,24 +110,24 @@ class _AVLTreeNode(Generic[T]):
                 # and that that node has no right child,
                 # so it will not recurse again
             return True
-        elif item_key < self_key:
+        if item_key < self_key:
             if self.left is None:
                 # dead end
                 return False
             # keep walking
             return self.left.remove(item, item_key)
-        else:  # item_key > self_key
-            if self.right is None:
-                # dead end
-                return False
-            # keep walking
-            return self.right.remove(item, item_key)
+        # else:  # item_key > self_key
+        if self.right is None:
+            # dead end
+            return False
+        # keep walking
+        return self.right.remove(item, item_key)
 
     def __repr__(self) -> str:
         return f"_AVLTreeNode({self.value})"
 
 
-class AVLTree(Generic[T]):
+class AVLTree(Generic[T]):  # TODO: actually add the balancing part
     __slots__ = "_key", "_root", "_count"
 
     def __init__(self, key: Callable[[T], Any] = None):
@@ -204,7 +205,9 @@ class AVLTree(Generic[T]):
             self._count -= 1
         return success
 
-    # TODO: bulk operations? https://en.wikipedia.org/wiki/AVL_tree#:~:text=log%20n)%20time.-,Set%20operations%20and%20bulk%20operations,-%5Bedit%5D
+    # TODO: bulk operations?
+    # pylint: disable=line-too-long
+    # https://en.wikipedia.org/wiki/AVL_tree#:~:text=log%20n)%20time.-,Set%20operations%20and%20bulk%20operations,-%5Bedit%5D
 
     def __len__(self) -> int:
         """
