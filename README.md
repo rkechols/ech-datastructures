@@ -16,6 +16,7 @@ Comprehensive package of Python-native datastructures.
 
 ### Implemented Datastructures:
   - Heap (AKA priority queue)
+  - AVLTree (balancing not yet implemented)
   - tree map (AVL) - **in progress**
 
 
