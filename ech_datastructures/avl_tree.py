@@ -5,6 +5,10 @@ T = TypeVar("T")
 
 
 class _AVLTreeNode(Generic[T]):
+    """
+    Intended only as a "helper class" to AVLTree.
+    Stores a single value, as well as connections that define the tree structure.
+    """
     __slots__ = "value", "left", "right", "parent", "_key"
 
     def __init__(self,
@@ -14,13 +18,43 @@ class _AVLTreeNode(Generic[T]):
                  right: "_AVLTreeNode[T]" = None,
                  parent: "_AVLTreeNode[T]" = None,
                  key: Callable[[T], Any]):
+        """
+        Construct a node of a self-balancing binary tree.
+
+        Parameters
+        ----------
+        value: T - the value to be stored in this node
+        left: _AVLTreeNode[T] - the left child of this node, by default None
+        right: _AVLTreeNode[T] - the right child of this node, by default None
+        parent: _AVLTreeNode[T] - the parent of this node, by default None
+        key: Callable[[T], Any] - a function to convert a stored item to
+            a comparable value. The return values of this function determine
+            ordering and equality of elements.
+            By default, None
+            If None, the identity function `lambda x: x` is used, meaning
+            elements are compared directly.
+        """
         self.value = value
         self.left = left
         self.right = right
         self.parent = parent
         self._key = key
 
-    def find(self, item: T, item_key: Any = None) -> Optional["_AVLTreeNode"]:
+    def find(self, item: T, item_key: Any) -> Optional["_AVLTreeNode"]:
+        """
+        Retrieve the node with the given value, if present in the subtree starting at this node.
+
+        Parameters
+        ----------
+        item: T - the value to find
+        item_key: Any - the precalculated key value of `item`
+            passed for computational efficiency.
+
+        Returns
+        -------
+        Optional[_AVLTreeNode] - the node containing the value
+            None if the value is not present
+        """
         self_key = self._key(self.value)
         # compare the keys
         if item_key == self_key:
@@ -38,6 +72,13 @@ class _AVLTreeNode(Generic[T]):
         return self.right.find(item, item_key)
 
     def __iter__(self) -> Generator["_AVLTreeNode[T]", None, None]:
+        """
+        Iterate over the subtree starting at this node, in order from least to greatest
+
+        Returns
+        -------
+        Generator[_AVLTreeNode[T], None, None] - lazily generates the nodes from least to greatest
+        """
         if self.left is not None:
             for descendant in self.left:
                 yield descendant
@@ -47,6 +88,21 @@ class _AVLTreeNode(Generic[T]):
                 yield descendant
 
     def add(self, item: T, item_key: Any) -> bool:
+        """
+        Add a value to the subtree starting at this node, if not already present
+
+        Parameters
+        ----------
+        item: T - the value to try to add
+        item_key: Any - the precalculated key value of `item`
+            passed for computational efficiency
+
+        Returns
+        -------
+        bool - if the addition was successful or not
+            True if the value was added
+            False if the value was already present
+        """
         self_key = self._key(self.value)
         # compare the keys
         if item_key == self_key:
@@ -69,6 +125,21 @@ class _AVLTreeNode(Generic[T]):
 
     # pylint: disable=too-many-branches
     def remove(self, item: T, item_key: Any) -> bool:
+        """
+        Remove a value from the subtree that starts at this node, if present
+
+        Parameters
+        ----------
+        item: T - the value to try to remove
+        item_key: Any - the precalculated key value of `item`
+            passed for computational efficiency
+
+        Returns
+        -------
+        bool - if the removal was successful or not
+            True if the value was found and remove
+            False if the value was not present
+        """
         self_key = self._key(self.value)
         # compare the keys
         if item_key == self_key:
@@ -124,34 +195,109 @@ class _AVLTreeNode(Generic[T]):
         return self.right.remove(item, item_key)
 
     def __repr__(self) -> str:
+        """
+        Give a string representation of the node.
+        For debugging purposes.
+
+        Returns
+        -------
+        str - a simple string value to represent the node
+        """
         return f"_AVLTreeNode({self.value})"
 
 
 class AVLTree(Generic[T]):  # TODO: actually add the balancing part
+    """
+    A self-balancing binary tree.
+
+    Does not allow duplicate values.
+
+    Order and equality of elements is determined by the return values of
+    the `key` function.
+
+    `T` represents the type of items being stored in the Heap.
+    """
     __slots__ = "_key", "_root", "_count"
 
     def __init__(self, key: Callable[[T], Any] = None):
+        """
+        Construct an AVLTree.
+
+        Parameters
+        ----------
+        key: Callable[[T], Any] - a function to convert a stored item to
+            a comparable value. The return values of this function determine
+            ordering and equality of elements.
+            By default, None
+            If None, the identity function `lambda x: x` is used, meaning
+            elements are compared directly.
+        """
         self._key = key if key is not None else lambda x: x  # by default just use the value itself
         self._root: Optional[_AVLTreeNode[T]] = None
         self._count = 0
 
     def __contains__(self, item: T) -> bool:
+        """
+        check if the value is present in the tree
+
+        Parameters
+        ----------
+        item: T - the value to search for
+
+        Returns
+        -------
+        bool - if the value is present or not
+            True if the value is in the tree
+            False if the value is not in the tree
+        """
         if self._root is None:
             return False
         return self._find(item) is not None
 
     def _find(self, item: T) -> Optional["_AVLTreeNode"]:
+        """
+        Helper function to retrieve the node with the given value, if present.
+
+        Parameters
+        ----------
+        item: T - the value to find
+
+        Returns
+        -------
+        Optional[_AVLTreeNode] - the node containing the value
+            None if the value is not present
+        """
         if self._root is None:
             return None
-        return self._root.find(item)
+        return self._root.find(item, self._key(item))
 
     def __iter__(self) -> Generator[T, None, None]:
+        """
+        Iterate over the tree, in order from least to greatest
+
+        Returns
+        -------
+        Generator[T, None, None] - lazily generates the values from least to greatest
+        """
         if self._root is None:
             return
         for descendant in self._root:
             yield descendant.value
 
     def add(self, item: T) -> bool:
+        """
+        Add a value to the tree, if not already present
+
+        Parameters
+        ----------
+        item: T - the value to try to add
+
+        Returns
+        -------
+        bool - if the addition was successful or not
+            True if the value was added
+            False if the value was already present
+        """
         if self._root is None:
             self._root = _AVLTreeNode(item, key=self._key)
             success = True
@@ -162,6 +308,19 @@ class AVLTree(Generic[T]):  # TODO: actually add the balancing part
         return success
 
     def remove(self, item: T) -> bool:
+        """
+        Remove a value from the tree, if present
+
+        Parameters
+        ----------
+        item: T - the value to try to remove
+
+        Returns
+        -------
+        bool - if the removal was successful or not
+            True if the value was found and remove
+            False if the value was not present
+        """
         if self._root is None:
             # nothing to remove
             return False
