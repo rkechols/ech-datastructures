@@ -2,6 +2,7 @@ import random
 from typing import List, Set, Tuple
 
 import pytest
+import copy
 
 from ech_datastructures import AVLTree
 
@@ -64,5 +65,20 @@ def test_remove_many_nums(avl_filled: Tuple[AVLTree, Set[int]]):
     assert_empty(avl)
     for num in nums_original:
         assert not avl.remove(num), "should return False to mark failed removal"
+
+
+def test_remove_root_nums(avl_filled: Tuple[AVLTree, Set[int]]):
+    avl, nums_original = avl_filled
+    nums_remaining = copy.copy(nums_original)
+    while len(nums_remaining) > 0:
+        to_remove = avl._root.value
+        assert avl.remove(to_remove)
+        nums_remaining.remove(to_remove)
+        assert len(avl) == len(nums_remaining)
+        assert list(avl) == sorted(nums_remaining)
+    assert_empty(avl)
+    for num in nums_original:
+        assert not avl.remove(num), "should return False to mark failed removal"
+
 
 # TODO: tests about balance?
