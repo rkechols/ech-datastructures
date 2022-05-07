@@ -1,4 +1,4 @@
-from typing import Any, Generic, Optional, TypeVar, Callable, Generator
+from typing import Any, Callable, Generator, Generic, Optional, TypeVar
 
 
 T = TypeVar("T")
@@ -72,8 +72,43 @@ class _AVLTreeNode(Generic[T]):
         # compare the keys
         if item_key == self_key:
             # found it!
-            # TODO
-            raise NotImplementedError(self.value)
+            if self.left is None:
+                # re-point the parent to the right child of this one
+                if self.parent.left is self:
+                    self.parent.left = self.right
+                else:  # self.parent.right is self:
+                    self.parent.right = self.right
+                # re-point the right child of this one to its new parent
+                if self.right is not None:
+                    self.right.parent = self.parent
+                # even though `self` has outdated pointers, nothing now points to it
+            # self.left is not None
+            elif self.right is None:
+                # re-point the parent to the left child of this one
+                if self.parent.left is self:
+                    self.parent.left = self.left
+                else:  # self.parent.right is self
+                    self.parent.right = self.left
+                # re-point the left child of this one to its new parent
+                if self.left is not None:
+                    self.left.parent = self.parent
+                # even though `self` has outdated pointers, nothing now points to it
+                return True
+            # neither self.left nor self.right is None
+            else:
+                # go find the "in-order predecessor
+                current = self.left
+                while current.right is not None:
+                    current = current.right
+                # put its value into the current one
+                self.value = current.value
+                # remove the lower one
+                current.remove(current.value, self._key(current.value))
+                # even thought that call to current.remove is recursive,
+                # we know it's already at the node it needs to remove,
+                # and that that node has no right child,
+                # so it will not recurse again
+            return True
         elif item_key < self_key:
             if self.left is None:
                 # dead end
@@ -131,10 +166,37 @@ class AVLTree(Generic[T]):
             return False
         # we need to check if we're removing the root
         item_key = self._key(item)
-        root_key = self._key(self._root)
-        # removing the root is special if it has no children
-        if item_key == root_key and self._root.left is None and self._root.right is None:
-            self._root = None
+        root_key = self._key(self._root.value)
+        # removing the root is special
+        if item_key == root_key:
+
+            if self._root.left is None:
+                # re-point the root to the right child of the old root
+                self._root = self._root.right
+                # re-point the right child (the new root) to its new parent (None)
+                if self._root is not None:
+                    self._root.parent = None
+            # self.left is not None
+            elif self._root.right is None:
+                # re-point the root to the left child of the old root
+                self._root = self._root.left
+                # re-point the left child (the new root) to its new parent (None)
+                if self._root is not None:
+                    self._root.parent = None
+            # neither self.left nor self.right is None
+            else:
+                # go find the "in-order predecessor
+                current = self._root.left
+                while current.right is not None:
+                    current = current.right
+                # put its value into the current one
+                self._root.value = current.value
+                # remove the lower one
+                current.remove(current.value, self._key(current.value))
+                # even thought that call to current.remove is recursive,
+                # we know it's already at the node it needs to remove,
+                # and that that node has no right child,
+                # so it will not recurse again
             success = True
         else:  # not any special situation
             success = self._root.remove(item, item_key)
