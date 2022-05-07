@@ -1,10 +1,11 @@
-from typing import Any, Callable, Generator, Generic, Optional, TypeVar
+from typing import Callable, Generator, Generic, Optional, TypeVar
 
 
 T = TypeVar("T")
+K = TypeVar("K")
 
 
-class _AVLTreeNode(Generic[T]):
+class _AVLTreeNode(Generic[T, K]):
     """
     Intended only as a "helper class" to AVLTree.
     Stores a single value, as well as connections that define the tree structure.
@@ -14,20 +15,20 @@ class _AVLTreeNode(Generic[T]):
     def __init__(self,
                  value: T,
                  *,
-                 left: "_AVLTreeNode[T]" = None,
-                 right: "_AVLTreeNode[T]" = None,
-                 parent: "_AVLTreeNode[T]" = None,
-                 key: Callable[[T], Any]):
+                 left: "_AVLTreeNode[T, K]" = None,
+                 right: "_AVLTreeNode[T, K]" = None,
+                 parent: "_AVLTreeNode[T, K]" = None,
+                 key: Callable[[T], K]):
         """
         Construct a node of a self-balancing binary tree.
 
         Parameters
         ----------
         value: T - the value to be stored in this node
-        left: _AVLTreeNode[T] - the left child of this node, by default None
-        right: _AVLTreeNode[T] - the right child of this node, by default None
-        parent: _AVLTreeNode[T] - the parent of this node, by default None
-        key: Callable[[T], Any] - a function to convert a stored item to
+        left: _AVLTreeNode[T, K] - the left child of this node, by default None
+        right: _AVLTreeNode[T, K] - the right child of this node, by default None
+        parent: _AVLTreeNode[T, K] - the parent of this node, by default None
+        key: Callable[[T], K] - a function to convert a stored item to
             a comparable value. The return values of this function determine
             ordering and equality of elements.
             By default, None
@@ -40,19 +41,18 @@ class _AVLTreeNode(Generic[T]):
         self.parent = parent
         self._key = key
 
-    def find(self, item: T, item_key: Any) -> Optional["_AVLTreeNode"]:
+    def find(self, item_key: K) -> Optional["_AVLTreeNode[T, K]"]:
         """
         Retrieve the node with the given value, if present in the subtree starting at this node.
 
         Parameters
         ----------
-        item: T - the value to find
-        item_key: Any - the precalculated key value of `item`
+        item_key: K - the precalculated key value of `item`
             passed for computational efficiency.
 
         Returns
         -------
-        Optional[_AVLTreeNode] - the node containing the value
+        Optional[_AVLTreeNode[T, K]] - the node containing the value
             None if the value is not present
         """
         self_key = self._key(self.value)
@@ -64,20 +64,20 @@ class _AVLTreeNode(Generic[T]):
             # go left (if we can)
             if self.left is None:
                 return None  # dead end
-            return self.left.find(item, item_key)
+            return self.left.find(item_key)
         # else:  # item_key > self_key
         # go right (if we can)
         if self.right is None:
             return None  # dead end
-        return self.right.find(item, item_key)
+        return self.right.find(item_key)
 
-    def __iter__(self) -> Generator["_AVLTreeNode[T]", None, None]:
+    def __iter__(self) -> Generator["_AVLTreeNode[T, K]", None, None]:
         """
         Iterate over the subtree starting at this node, in order from least to greatest
 
         Returns
         -------
-        Generator[_AVLTreeNode[T], None, None] - lazily generates the nodes from least to greatest
+        Generator[_AVLTreeNode[T, K], None, None] - lazily generates the nodes from least to greatest
         """
         if self.left is not None:
             for descendant in self.left:
@@ -87,14 +87,14 @@ class _AVLTreeNode(Generic[T]):
             for descendant in self.right:
                 yield descendant
 
-    def add(self, item: T, item_key: Any) -> bool:
+    def add(self, item: T, item_key: K) -> bool:
         """
         Add a value to the subtree starting at this node, if not already present
 
         Parameters
         ----------
         item: T - the value to try to add
-        item_key: Any - the precalculated key value of `item`
+        item_key: K - the precalculated key value of `item`
             passed for computational efficiency
 
         Returns
@@ -124,14 +124,14 @@ class _AVLTreeNode(Generic[T]):
         return self.right.add(item, item_key)
 
     # pylint: disable=too-many-branches
-    def remove(self, item: T, item_key: Any) -> bool:
+    def remove(self, item: T, item_key: K) -> bool:
         """
         Remove a value from the subtree that starts at this node, if present
 
         Parameters
         ----------
         item: T - the value to try to remove
-        item_key: Any - the precalculated key value of `item`
+        item_key: K - the precalculated key value of `item`
             passed for computational efficiency
 
         Returns
@@ -206,7 +206,7 @@ class _AVLTreeNode(Generic[T]):
         return f"_AVLTreeNode({self.value})"
 
 
-class AVLTree(Generic[T]):  # TODO: actually add the balancing part
+class AVLTree(Generic[T, K]):  # TODO: actually add the balancing part
     """
     A self-balancing binary tree.
 
@@ -219,21 +219,21 @@ class AVLTree(Generic[T]):  # TODO: actually add the balancing part
     """
     __slots__ = "_key", "_root", "_count"
 
-    def __init__(self, key: Callable[[T], Any] = None):
+    def __init__(self, key: Callable[[T], K] = None):
         """
         Construct an AVLTree.
 
         Parameters
         ----------
-        key: Callable[[T], Any] - a function to convert a stored item to
+        key: Callable[[T], K] - a function to convert a stored item to
             a comparable value. The return values of this function determine
             ordering and equality of elements.
             By default, None
             If None, the identity function `lambda x: x` is used, meaning
-            elements are compared directly.
+            elements are compared directly (and K is T).
         """
         self._key = key if key is not None else lambda x: x  # by default just use the value itself
-        self._root: Optional[_AVLTreeNode[T]] = None
+        self._root: Optional[_AVLTreeNode[T, K]] = None
         self._count = 0
 
     def __contains__(self, item: T) -> bool:
@@ -254,9 +254,9 @@ class AVLTree(Generic[T]):  # TODO: actually add the balancing part
             return False
         return self._find(item) is not None
 
-    def _find(self, item: T) -> Optional["_AVLTreeNode"]:
+    def _find(self, item: T) -> Optional["_AVLTreeNode[T, K]"]:
         """
-        Helper function to retrieve the node with the given value, if present.
+        Retrieve the node with the given value, if present.
 
         Parameters
         ----------
@@ -264,12 +264,30 @@ class AVLTree(Generic[T]):  # TODO: actually add the balancing part
 
         Returns
         -------
-        Optional[_AVLTreeNode] - the node containing the value
+        Optional[_AVLTreeNode[T, K]] - the node containing the value
             None if the value is not present
         """
         if self._root is None:
             return None
-        return self._root.find(item, self._key(item))
+        return self._root.find(self._key(item))
+
+    def find_by_key(self, item_key: K) -> Optional[T]:
+        """
+        Retrieve the item with a key value that matches the provided key value, if present.
+
+        Parameters
+        ----------
+        item_key: K - the key value to match
+
+        Returns
+        -------
+        Optional[T] - the item that has a key value matching `item_key`
+            None if there is no item with a matching key value
+        """
+        result = self._root.find(item_key)
+        if result is None:
+            return None
+        return result.value
 
     def __iter__(self) -> Generator[T, None, None]:
         """
@@ -329,7 +347,6 @@ class AVLTree(Generic[T]):  # TODO: actually add the balancing part
         root_key = self._key(self._root.value)
         # removing the root is special
         if item_key == root_key:
-
             if self._root.left is None:
                 # re-point the root to the right child of the old root
                 self._root = self._root.right
