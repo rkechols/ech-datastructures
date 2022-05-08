@@ -78,7 +78,8 @@ class _AVLTreeNode(Generic[T, K]):
 
         Returns
         -------
-        Generator[_AVLTreeNode[T, K], None, None] - lazily generates the nodes from least to greatest
+        Generator[_AVLTreeNode[T, K], None, None] -
+            lazily generates the nodes from least to greatest
         """
         if self.left is not None:
             for descendant in self.left:
