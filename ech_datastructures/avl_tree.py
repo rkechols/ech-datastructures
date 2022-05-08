@@ -131,7 +131,7 @@ class _AVLTreeNode(Generic[T, K]):
         return self.right.add(item, item_key)
 
     # pylint: disable=too-many-branches
-    def remove(self, item_key: K) -> bool:
+    def remove(self, item_key: K) -> Optional[T]:
         """
         Remove the item with the given key value from the
         subtree that starts at this node, if present
@@ -142,14 +142,14 @@ class _AVLTreeNode(Generic[T, K]):
 
         Returns
         -------
-        bool - if the removal was successful or not
-            True if the item was found and removed
-            False if no item with the given key value was found
+        Optional[T] - the removed item
+            None if no item with the given key value was found
         """
         self_key = self._key(self.value)
         # compare the keys
         if item_key == self_key:
             # found it!
+            removed = self.value
             if self.left is None:
                 # re-point the parent to the right child of this one
                 if self.parent.left is self:
@@ -171,7 +171,6 @@ class _AVLTreeNode(Generic[T, K]):
                 if self.left is not None:
                     self.left.parent = self.parent
                 # even though `self` has outdated pointers, nothing now points to it
-                return True
             # neither self.left nor self.right is None
             else:
                 # go find the "in-order predecessor
@@ -186,17 +185,17 @@ class _AVLTreeNode(Generic[T, K]):
                 # we know it's already at the node it needs to remove,
                 # and that that node has no right child,
                 # so it will not recurse again
-            return True
+            return removed
         if item_key < self_key:
             if self.left is None:
                 # dead end
-                return False
+                return None
             # keep walking
             return self.left.remove(item_key)
         # else:  # item_key > self_key
         if self.right is None:
             # dead end
-            return False
+            return None
         # keep walking
         return self.right.remove(item_key)
 
@@ -331,7 +330,7 @@ class AVLTree(Generic[T, K]):  # TODO: actually add the balancing part
             self._count += 1
         return success
 
-    def remove(self, item_key: K) -> bool:
+    def remove(self, item_key: K) -> Optional[T]:
         """
         Remove the item with the given key value from the tree, if present
 
@@ -341,17 +340,17 @@ class AVLTree(Generic[T, K]):  # TODO: actually add the balancing part
 
         Returns
         -------
-        bool - if the removal was successful or not
-            True if the item was found and removed
-            False if no item with the given key value was found
+        Optional[T] - the removed item
+            None if no item with the given key value was found
         """
         if self._root is None:
             # nothing to remove
-            return False
+            return None
         # we need to check if we're removing the root
         root_key = self._key(self._root.value)
         # removing the root is special
         if item_key == root_key:
+            removed = self._root.value
             if self._root.left is None:
                 # re-point the root to the right child of the old root
                 self._root = self._root.right
@@ -379,12 +378,11 @@ class AVLTree(Generic[T, K]):  # TODO: actually add the balancing part
                 # we know it's already at the node it needs to remove,
                 # and that that node has no right child,
                 # so it will not recurse again
-            success = True
         else:  # not any special situation
-            success = self._root.remove(item_key)
-        if success:
+            removed = self._root.remove(item_key)
+        if removed is not None:
             self._count -= 1
-        return success
+        return removed
 
     # TODO: bulk operations?
     # pylint: disable=line-too-long

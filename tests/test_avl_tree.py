@@ -1,8 +1,8 @@
+import copy
 import random
 from typing import List, Set, Tuple
 
 import pytest
-import copy
 
 from ech_datastructures import AVLTree
 
@@ -23,7 +23,7 @@ def avl_filled(nums: List[int]) -> Tuple[AVLTree, Set[int]]:
 def assert_empty(avl: AVLTree):
     assert len(avl) == 0, "empty tree should have length 0"
     assert avl.is_empty(), "empty tree should be marked as empty"
-    assert not avl.remove(5), "removing from an empty tree should return False"
+    assert avl.remove(5) is None, "removing from an empty tree should return None"
     for _ in avl:
         pytest.fail("iterating over an empty tree should not enter the loop")
 
@@ -57,14 +57,14 @@ def test_remove_many_nums(avl_filled: Tuple[AVLTree, Set[int]]):
     while len(nums_remaining) > 0:
         num = nums_remaining[-1]
         del nums_remaining[-1]
-        assert avl.remove(num), "should return True to mark successful removal"
+        assert avl.remove(num) == num, "should return removed item to mark successful removal"
         assert len(avl) == len(nums_remaining)
         assert list(avl) == sorted(nums_remaining), \
             "iterating over tree should return numbers in order, and with no duplicates"
-        assert not avl.remove(bogus), "should return False to mark failed removal"
+        assert avl.remove(bogus) is None, "should return None to mark failed removal"
     assert_empty(avl)
     for num in nums_original:
-        assert not avl.remove(num), "should return False to mark failed removal"
+        assert avl.remove(num) is None, "should return None to mark failed removal"
 
 
 def test_remove_root_nums(avl_filled: Tuple[AVLTree, Set[int]]):
@@ -72,13 +72,15 @@ def test_remove_root_nums(avl_filled: Tuple[AVLTree, Set[int]]):
     nums_remaining = copy.copy(nums_original)
     while len(nums_remaining) > 0:
         to_remove = avl._root.value
-        assert avl.remove(to_remove)
+        assert avl.remove(to_remove) == to_remove, \
+            "should return removed item to mark successful removal"
         nums_remaining.remove(to_remove)
         assert len(avl) == len(nums_remaining)
-        assert list(avl) == sorted(nums_remaining)
+        assert list(avl) == sorted(nums_remaining), \
+            "iterating over tree should return numbers in order, and with no duplicates"
     assert_empty(avl)
     for num in nums_original:
-        assert not avl.remove(num), "should return False to mark failed removal"
+        assert avl.remove(num) is None, "should return None to mark failed removal"
 
 
 # TODO: tests about balance?
