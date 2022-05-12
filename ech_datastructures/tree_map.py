@@ -119,6 +119,7 @@ class _TreeMapNode(Generic[K, V]):
             self.right = _TreeMapNode(key, default, parent=self)
         return self.right.get_set_default(key, default)
 
+    # pylint: disable=too-many-branches
     def remove(self, key: K) -> V:
         """
         If key is in the subtree starting at this node, remove it and return its value.
