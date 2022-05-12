@@ -20,7 +20,7 @@ class _TreeMapNode(Generic[K, V]):
 
 
 class TreeMap(MappingABC, Generic[K, V]):
-    __slots__ = "_tree",  # comma makes it a tuple like it should be
+    __slots__ = ("_tree",)  # tuple, length 1
 
     def __init__(self):
         self._tree: AVLTree[_TreeMapNode[K, V]] = AVLTree(key=_TreeMapNode.key)
@@ -28,13 +28,13 @@ class TreeMap(MappingABC, Generic[K, V]):
     def clear(self):
         self._tree.clear()
 
-    def get(self, k: K, default: V = None) -> V:
-        result = self._tree.find(k)
+    def get(self, key: K, default: V = None) -> V:
+        result = self._tree.find(key)
         if result is None:
             if default is None:
-                raise KeyError(k)
-            else:
-                return default
+                raise KeyError(key)
+            # else:
+            return default
         return result.v
 
     def items(self) -> List[Tuple[K, V]]:
@@ -60,8 +60,8 @@ class TreeMap(MappingABC, Generic[K, V]):
         if result is None:
             if default is None:
                 raise KeyError(k)
-            else:
-                return default
+            # else:
+            return default
         return result.v
 
     def popitem(self) -> Tuple[K, V]:
@@ -73,7 +73,12 @@ class TreeMap(MappingABC, Generic[K, V]):
         result = self._tree.remove(k)
         return result.k, result.v
 
-    # def setdefault
+    def setdefault(self, k: K, default: V = None) -> V:
+        result = self._tree.find(k)
+        if result is None:
+            self._tree.add(_TreeMapNode(k, default))
+            return default
+        return result.v
 
     def update(self, new_pairs: Union[Mapping[K, V], Iterable[Tuple[K, V]]], **kwargs):
         if isinstance(new_pairs, MappingABC):
@@ -81,7 +86,8 @@ class TreeMap(MappingABC, Generic[K, V]):
         elif isinstance(new_pairs, IterableABC):
             tup_iter = new_pairs
         else:
-            raise TypeError(f"`new_pairs` must be a Mapping or Iterable (actual class is {new_pairs.__class__})")
+            raise TypeError(f"`new_pairs` must be a Mapping or Iterable "
+                            f"(actual class is {new_pairs.__class__})")
         for k, v in chain(tup_iter, kwargs.items()):
             self._tree.add(_TreeMapNode(k, v), overwrite=True)
 
@@ -125,7 +131,6 @@ class TreeMap(MappingABC, Generic[K, V]):
         return not self.__eq__(other)
 
     def __repr__(self) -> str:
-        # TODO
-        raise NotImplementedError
+        return f"{self.__class__.__name__}(len={self.__len__()})"
 
     __hash__ = None
