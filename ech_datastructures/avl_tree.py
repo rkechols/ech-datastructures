@@ -101,7 +101,8 @@ class _AVLTreeNode(Generic[T, K]):
             passed for computational efficiency.
             Default is None.
             If None, the key value for the given item is calculated.
-        overwrite: bool - whether to overwrite a conflicting value
+        overwrite: bool - whether to overwrite a conflicting value.
+            By default, False.
             if True and there's already a node with the given key value,
             the item will be overwritten
 
@@ -320,7 +321,8 @@ class AVLTree(Generic[T, K]):  # TODO: actually add the balancing part
         Parameters
         ----------
         item: T - the item to try to add
-        overwrite: bool - whether to overwrite a conflicting value
+        overwrite: bool - whether to overwrite a conflicting value.
+            By default, False.
             if True and there's already a node with the given key value,
             the item will be overwritten
 
