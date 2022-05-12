@@ -282,6 +282,7 @@ class TreeMap(MappingABC, Generic[K, V]):
                 removed_value = self._root.remove(key)
         except KeyError:  # couldn't find it
             if default is None:
+                # pylint: disable=raise-missing-from
                 raise KeyError(key)
             # else:
             return default
@@ -410,6 +411,7 @@ class TreeMap(MappingABC, Generic[K, V]):
                 raise KeyError(key)
             result = self._root.remove(key)
         except KeyError:
+            # pylint: disable=raise-missing-from
             raise KeyError(key)
         else:
             self._count -= 1
