@@ -215,7 +215,9 @@ class _AVLTreeNode(Generic[T, K]):
         -------
         str - a simple string value to represent the node
         """
-        return f"_AVLTreeNode({self.value})"
+        return f"{self.__class__.__name__}({self.value})"
+
+    __hash__ = None
 
 
 class AVLTree(Generic[T, K]):  # TODO: actually add the balancing part
@@ -430,3 +432,5 @@ class AVLTree(Generic[T, K]):  # TODO: actually add the balancing part
         """
         self._root = None
         self._count = 0
+
+    __hash__ = None
