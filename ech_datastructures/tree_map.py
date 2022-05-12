@@ -1,6 +1,7 @@
-from typing import Any, Generic, Iterable, List, Mapping, Tuple, TypeVar, Union
+from itertools import chain
+from typing import Any, Generator, Generic, Iterable, List, Tuple, TypeVar
 
-from .avl_tree import AVLTree
+from ech_datastructures.avl_tree import AVLTree
 
 
 K = TypeVar("K")
@@ -18,7 +19,7 @@ class _TreeMapNode(Generic[K, V]):
 
 
 class TreeMap(Generic[K, V]):
-    __slots__ = "_tree",  # comma makes it a tuple, like it needs to be
+    __slots__ = "_tree",  # comma makes it a tuple like it should be
 
     def __init__(self):
         self._tree: AVLTree[_TreeMapNode[K, V]] = AVLTree(key=_TreeMapNode.key)
@@ -27,7 +28,7 @@ class TreeMap(Generic[K, V]):
         self._tree.clear()
 
     def get(self, k: K, default: V = None) -> V:
-        result = self._tree.find_by_key(k)
+        result = self._tree.find(k)
         if result is None:
             if default is None:
                 raise KeyError(k)
@@ -54,45 +55,68 @@ class TreeMap(Generic[K, V]):
         return to_return
 
     def pop(self, k: K, default: V = None) -> V:
-        # TODO
-        raise NotImplementedError
+        result = self._tree.remove(k)
+        if result is None:
+            if default is None:
+                raise KeyError(k)
+            else:
+                return default
+        return result.v
 
-    def popitem(self) -> Tuple[K, V]:
-        # TODO
-        raise NotImplementedError
+    # def popitem(self) -> Tuple[K, V]:
+    #     # what key to pop?
+    #     try:
+    #         k = self._keys_stack.pop()
+    #     except IndexError:
+    #         raise KeyError("map is empty")
+    #     # pop it
+    #     result = self._tree.remove(k)
+    #     return result.k, result.v
 
     # def setdefault
 
-    def update(self, new_pairs: Union[Mapping[K, V], Iterable[Tuple[K, V]]], **kwargs):
-        # TODO
-        raise NotImplementedError
+    def update(self, new_pairs: Iterable[Tuple[K, V]], **kwargs):
+        for k, v in chain(new_pairs, kwargs.items()):
+            self._tree.add(_TreeMapNode(k, v), overwrite=True)
 
     def __contains__(self, k: K) -> bool:
-        # TODO
-        raise NotImplementedError
+        return k in self._tree
 
     def __delitem__(self, k: K):
-        # TODO
-        raise NotImplementedError
+        result = self._tree.remove(k)
+        if result is None:
+            raise KeyError(k)
 
     def __eq__(self, other: Any) -> bool:
-        # TODO
-        raise NotImplementedError
+        if not isinstance(other, self.__class__):
+            return False
+        if len(self) != len(other):
+            return False
+        for self_node, other_node in zip(self._tree, other._tree):
+            if self_node.k != other_node.k:
+                return False
+            if self_node.v != other_node.v:
+                return False
+        return True
 
     def __getitem__(self, k: K) -> V:
-        # TODO
-        raise NotImplementedError
+        result = self._tree.find(k)
+        if result is None:
+            raise KeyError(k)
+        return result.v
 
-    def __iter__(self):
-        # TODO
-        raise NotImplementedError
+    def __setitem__(self, k: K, v: V):
+        self._tree.add(_TreeMapNode(k, v), overwrite=True)
+
+    def __iter__(self) -> Generator[K, None, None]:
+        for node in self._tree:
+            yield node.k
 
     def __len__(self) -> int:
         return len(self._tree)
 
     def __ne__(self, other: Any) -> bool:
-        # TODO
-        raise NotImplementedError
+        return not self.__eq__(other)
 
     def __repr__(self) -> str:
         # TODO
