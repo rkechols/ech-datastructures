@@ -71,8 +71,20 @@ class _TreeMapNode(Generic[K, V]):
         Optional[_TreeMapNode[K, V]] - The node with the given key,
             None if there is no node with the given key.
         """
-        # TODO
-        raise NotImplementedError
+        # compare the keys
+        if key == self.key:
+            # found it!
+            return self
+        if key < self.key:
+            # go left (if we can)
+            if self.left is None:
+                return None  # dead end
+            return self.left.get(key)
+        # else:  # key > self.key
+        # go right (if we can)
+        if self.right is None:
+            return None  # dead end
+        return self.right.get(key)
 
     def get_set_default(self, key: K, default: V = None) -> Optional["_TreeMapNode[K, V]"]:
         """
@@ -90,8 +102,22 @@ class _TreeMapNode(Generic[K, V]):
         Optional[_TreeMapNode[K, V]] - The node with the given key,
             or None if the key is not initially present and default was inserted.
         """
-        # TODO
-        raise NotImplementedError
+        # compare the keys
+        if key == self.key:
+            # found it!
+            return self
+        if key < self.key:
+            # go left (if we can)
+            if self.left is None:
+                # dead end; insert here
+                self.left = _TreeMapNode(key, default, parent=self)
+            return self.left.get_set_default(key, default)
+        # else:  # key > self.key
+        # go right (if we can)
+        if self.right is None:
+            # dead end; insert here
+            self.right = _TreeMapNode(key, default, parent=self)
+        return self.right.get_set_default(key, default)
 
     def remove(self, key: K) -> V:
         """
@@ -110,8 +136,58 @@ class _TreeMapNode(Generic[K, V]):
         -------
         V - The value associated with the given key.
         """
-        # TODO: if key not present, raise KeyError(key)
-        raise NotImplementedError
+        # compare the keys
+        if key == self.key:
+            # found it!
+            removed = self.value
+            if self.left is None:
+                # re-point the parent to the right child of this one
+                if self.parent.left is self:
+                    self.parent.left = self.right
+                else:  # self.parent.right is self:
+                    self.parent.right = self.right
+                # re-point the right child of this one to its new parent
+                if self.right is not None:
+                    self.right.parent = self.parent
+                # even though `self` has outdated pointers, nothing now points to it
+            # self.left is not None
+            elif self.right is None:
+                # re-point the parent to the left child of this one
+                if self.parent.left is self:
+                    self.parent.left = self.left
+                else:  # self.parent.right is self
+                    self.parent.right = self.left
+                # re-point the left child of this one to its new parent
+                if self.left is not None:
+                    self.left.parent = self.parent
+                # even though `self` has outdated pointers, nothing now points to it
+            # neither self.left nor self.right is None
+            else:
+                # go find the "in-order predecessor
+                current = self.left
+                while current.right is not None:
+                    current = current.right
+                # put its value into the current one
+                self.value = current.value
+                # remove the lower one
+                current.remove(current.key)
+                # even thought that call to current.remove is recursive,
+                # we know it's already at the node it needs to remove,
+                # and that that node has no right child,
+                # so it will not recurse again
+            return removed
+        if key < self.key:
+            if self.left is None:
+                # dead end
+                raise KeyError(key)
+            # keep walking
+            return self.left.remove(key)
+        # else:  # key > self.key
+        if self.right is None:
+            # dead end
+            raise KeyError(key)
+        # keep walking
+        return self.right.remove(key)
 
     def set(self, key: K, value: V) -> bool:
         """
@@ -127,7 +203,25 @@ class _TreeMapNode(Generic[K, V]):
         -------
         bool - True if the key was newly added, False if the key was already present.
         """
-        raise NotImplementedError
+        # compare the keys
+        if key == self.key:
+            # in-place replacement
+            self.value = value
+            return False
+        if key < self.key:
+            if self.left is None:
+                # found the spot to add it
+                self.left = _TreeMapNode(key, value, parent=self)
+                return True
+            # keep walking
+            return self.left.set(value, key)
+        # else:  # key > self.key
+        if self.right is None:
+            # found the spot to add it
+            self.right = _TreeMapNode(key, value, parent=self)
+            return True
+        # keep walking
+        return self.right.set(value, key)
 
 
 class TreeMap(MappingABC, Generic[K, V]):
