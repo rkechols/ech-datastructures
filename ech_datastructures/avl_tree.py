@@ -89,7 +89,7 @@ class _AVLTreeNode(Generic[T, K]):
             for descendant in self.right:
                 yield descendant
 
-    def add(self, item: T, item_key: K = None) -> bool:
+    def add(self, item: T, item_key: K = None, overwrite: bool = False) -> bool:
         """
         Add an item to the subtree starting at this node,
         if no item with a matching key value is already present
@@ -101,19 +101,25 @@ class _AVLTreeNode(Generic[T, K]):
             passed for computational efficiency.
             Default is None.
             If None, the key value for the given item is calculated.
+        overwrite: bool - whether to overwrite a conflicting value
+            if True and there's already a node with the given key value,
+            the item will be overwritten
 
         Returns
         -------
-        bool - if the addition was successful or not
-            True if the item was added
+        bool - if the addition created a new node or not
+            True if the item was newly added (tree size increased)
             False if an item with the given key value was already present
+                (if `overwrite` was True, the old value was overwritten in place)
         """
         if item_key is None:
             item_key = self._key(item)
         self_key = self._key(self.value)
         # compare the keys
         if item_key == self_key:
-            # duplicate
+            # duplicate (slot already used)
+            if overwrite:  # in-place replacement
+                self.value = item
             return False
         if item_key < self_key:
             if self.left is None:
@@ -121,14 +127,14 @@ class _AVLTreeNode(Generic[T, K]):
                 self.left = _AVLTreeNode(item, parent=self, key=self._key)
                 return True
             # keep walking
-            return self.left.add(item, item_key)
+            return self.left.add(item, item_key, overwrite=overwrite)
         # else:  # item_key > self_key
         if self.right is None:
             # found the spot to add it
             self.right = _AVLTreeNode(item, parent=self, key=self._key)
             return True
         # keep walking
-        return self.right.add(item, item_key)
+        return self.right.add(item, item_key, overwrite=overwrite)
 
     # pylint: disable=too-many-branches
     def remove(self, item_key: K) -> Optional[T]:
@@ -307,28 +313,32 @@ class AVLTree(Generic[T, K]):  # TODO: actually add the balancing part
         for descendant in self._root:
             yield descendant.value
 
-    def add(self, item: T) -> bool:
+    def add(self, item: T, overwrite: bool = False) -> bool:
         """
         Add an item to the tree, if no item with a matching key value is already present
 
         Parameters
         ----------
         item: T - the item to try to add
+        overwrite: bool - whether to overwrite a conflicting value
+            if True and there's already a node with the given key value,
+            the item will be overwritten
 
         Returns
         -------
-        bool - if the addition was successful or not
-            True if the item was added
+        bool - if the addition created a new node or not
+            True if the item was newly added (tree size increased)
             False if an item with the given key value was already present
+                (if `overwrite` was True, the old value was overwritten in place)
         """
         if self._root is None:
             self._root = _AVLTreeNode(item, key=self._key)
-            success = True
+            new_node = True
         else:
-            success = self._root.add(item)
-        if success:
+            new_node = self._root.add(item, overwrite=overwrite)
+        if new_node:
             self._count += 1
-        return success
+        return new_node
 
     def remove(self, item_key: K) -> Optional[T]:
         """
