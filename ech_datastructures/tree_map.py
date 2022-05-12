@@ -226,6 +226,14 @@ class _TreeMapNode(Generic[K, V]):
         return self.right.set(key, value)
 
     def __repr__(self) -> str:
+        """
+        Give a simple string representation of the node.
+        For debugging purposes.
+
+        Returns
+        -------
+        str - A simple string value to represent the node.
+        """
         return f"{self.__class__.__name__}(key={self.key}, value={self.value})"
 
 
