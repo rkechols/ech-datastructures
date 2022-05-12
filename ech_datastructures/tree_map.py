@@ -74,6 +74,7 @@ class TreeMap(MappingABC, Generic[K, V]):
         return result.k, result.v
 
     def setdefault(self, k: K, default: V = None) -> V:
+        # not the most efficient
         result = self._tree.find(k)
         if result is None:
             self._tree.add(_TreeMapNode(k, default))
