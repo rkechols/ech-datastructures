@@ -1,5 +1,6 @@
+from collections.abc import Iterable as IterableABC, Mapping as MappingABC
 from itertools import chain
-from typing import Any, Generator, Generic, Iterable, List, Tuple, TypeVar
+from typing import Any, Generator, Generic, Iterable, List, Mapping, Tuple, TypeVar, Union
 
 from ech_datastructures.avl_tree import AVLTree
 
@@ -18,7 +19,7 @@ class _TreeMapNode(Generic[K, V]):
         return node.k
 
 
-class TreeMap(Generic[K, V]):
+class TreeMap(MappingABC, Generic[K, V]):
     __slots__ = "_tree",  # comma makes it a tuple like it should be
 
     def __init__(self):
@@ -63,20 +64,25 @@ class TreeMap(Generic[K, V]):
                 return default
         return result.v
 
-    # def popitem(self) -> Tuple[K, V]:
-    #     # what key to pop?
-    #     try:
-    #         k = self._keys_stack.pop()
-    #     except IndexError:
-    #         raise KeyError("map is empty")
-    #     # pop it
-    #     result = self._tree.remove(k)
-    #     return result.k, result.v
+    def popitem(self) -> Tuple[K, V]:
+        if len(self._tree) == 0:
+            raise KeyError("map is empty")
+        # what key to pop?
+        k = next(iter(self._tree)).k
+        # pop it
+        result = self._tree.remove(k)
+        return result.k, result.v
 
     # def setdefault
 
-    def update(self, new_pairs: Iterable[Tuple[K, V]], **kwargs):
-        for k, v in chain(new_pairs, kwargs.items()):
+    def update(self, new_pairs: Union[Mapping[K, V], Iterable[Tuple[K, V]]], **kwargs):
+        if isinstance(new_pairs, MappingABC):
+            tup_iter = new_pairs.items()
+        elif isinstance(new_pairs, IterableABC):
+            tup_iter = new_pairs
+        else:
+            raise TypeError(f"`new_pairs` must be a Mapping or Iterable (actual class is {new_pairs.__class__})")
+        for k, v in chain(tup_iter, kwargs.items()):
             self._tree.add(_TreeMapNode(k, v), overwrite=True)
 
     def __contains__(self, k: K) -> bool:
