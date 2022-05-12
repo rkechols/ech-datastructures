@@ -169,6 +169,7 @@ class _TreeMapNode(Generic[K, V]):
                 while current.right is not None:
                     current = current.right
                 # put its value into the current one
+                self.key = current.key
                 self.value = current.value
                 # remove the lower one
                 current.remove(current.key)
@@ -215,14 +216,17 @@ class _TreeMapNode(Generic[K, V]):
                 self.left = _TreeMapNode(key, value, parent=self)
                 return True
             # keep walking
-            return self.left.set(value, key)
+            return self.left.set(key, value)
         # else:  # key > self.key
         if self.right is None:
             # found the spot to add it
             self.right = _TreeMapNode(key, value, parent=self)
             return True
         # keep walking
-        return self.right.set(value, key)
+        return self.right.set(key, value)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(key={self.key}, value={self.value})"
 
 
 class TreeMap(MappingABC, Generic[K, V]):
@@ -366,6 +370,7 @@ class TreeMap(MappingABC, Generic[K, V]):
                     while current.right is not None:
                         current = current.right
                     # put its value into the current one
+                    self._root.key = current.key
                     self._root.value = current.value
                     # remove the lower one
                     current.remove(current.key)
