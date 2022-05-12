@@ -27,11 +27,11 @@ class _TreeMapNode(Generic[K, V]):
 
         Parameters
         ----------
-        key: K - the key used for sorting and comparing this node against others
-        value: T - the value to be stored in this node
-        left: _TreeMapNode[K, V] - the left child of this node, by default None
-        right: _TreeMapNode[K, V] - the right child of this node, by default None
-        parent: _TreeMapNode[K, V] - the parent of this node, by default None
+        key: K - the key used for sorting and comparing this node against others.
+        value: T - the value to be stored in this node.
+        left: _TreeMapNode[K, V] - the left child of this node, default is None.
+        right: _TreeMapNode[K, V] - the right child of this node, default is None.
+        parent: _TreeMapNode[K, V] - the parent of this node, default is None.
         """
         self.key = key
         self.value = value
@@ -40,19 +40,93 @@ class _TreeMapNode(Generic[K, V]):
         self.parent = parent
 
     def __iter__(self) -> Generator["_TreeMapNode[K, V]", None, None]:
-        raise NotImplementedError
+        """
+        Iterate over the subtree starting at this node,
+        in order from least to greatest (by key).
+
+        Returns
+        -------
+        Generator[_TreeMapNode[K, V], None, None] -
+            lazily generates the nodes from least to greatest
+        """
+        if self.left is not None:
+            for descendant in self.left:
+                yield descendant
+        yield self
+        if self.right is not None:
+            for descendant in self.right:
+                yield descendant
 
     def get(self, key: K) -> Optional["_TreeMapNode[K, V]"]:
+        """
+        Return the node for the given key if the key is in the subtree starting at this node.
+        If the key is not in this subtree, None is returned.
+
+        Parameters
+        ----------
+        key: K - The key to search for and retrieve a node for.
+
+        Returns
+        -------
+        Optional[_TreeMapNode[K, V]] - The node with the given key,
+            None if there is no node with the given key.
+        """
+        # TODO
         raise NotImplementedError
 
     def get_set_default(self, key: K, default: V = None) -> Optional["_TreeMapNode[K, V]"]:
+        """
+        If key is in the subtree starting at this node, return its value.
+        If not, insert key with a value of default and return None.
+
+        Parameters
+        ----------
+        key: K - The key to search for and retrieve a value for.
+        default: V - The value to insert if the key is not initially present.
+            None, by default.
+
+        Returns
+        -------
+        Optional[_TreeMapNode[K, V]] - The node with the given key,
+            or None if the key is not initially present and default was inserted.
+        """
+        # TODO
         raise NotImplementedError
 
     def remove(self, key: K) -> V:
+        """
+        If key is in the subtree starting at this node, remove it and return its value.
+        If the key is not in this subtree, a KeyError is raised.
+
+        Parameters
+        ----------
+        key: K - The key to search for and remove.
+
+        Raises
+        ------
+        KeyError - If the key is not in this subtree.
+
+        Returns
+        -------
+        V - The value associated with the given key.
+        """
         # TODO: if key not present, raise KeyError(key)
         raise NotImplementedError
 
     def set(self, key: K, value: V) -> bool:
+        """
+        Set the given key's value to the given value, in the subtree starting at this node.
+        Can be used to overwrite the value of an existing key, or to insert a new key/value pair.
+
+        Parameters
+        ----------
+        key: K - The key where the value should be written.
+        value: V - The value to be written.
+
+        Returns
+        -------
+        bool - True if the key was newly added, False if the key was already present.
+        """
         raise NotImplementedError
 
 
