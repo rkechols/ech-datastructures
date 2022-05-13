@@ -141,3 +141,14 @@ def test_issuperset_negative_disjoint():
     tree2 = TreeSet([5, 6, 7, 8])
     assert not tree1.issuperset(tree2)
     assert not tree2.issuperset(tree1)
+
+
+# TODO: more tests
+
+
+def test_xor_positive():
+    tree1 = TreeSet([3, 4, 7, 8, 9])
+    tree2 = TreeSet([1, 2, 4, 6, 7, 9])
+    result = list(tree1 ^ tree2)
+    assert result == list(tree2 ^ tree1)
+    assert result == [1, 2, 3, 6, 8]

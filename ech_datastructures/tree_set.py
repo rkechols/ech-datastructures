@@ -218,14 +218,58 @@ class TreeSet(Generic[T]):
         return to_return
 
     def symmetric_difference(self, other: Iterable[T]) -> "TreeSet[T]":
-        # TODO
-        raise NotImplementedError
+        if self.__len__() == 0:
+            return TreeSet(other)
+        to_return = self.copy()
+        for elem in other:
+            if elem in self:
+                to_return.remove(elem)
+            else:
+                to_return.add(elem)
+        return to_return
 
     def __xor__(self, other: "TreeSet[T]") -> "TreeSet[T]":
         if not isinstance(other, TreeSet):
             raise ValueError(f"`other` must be a TreeSet, but was {other.__class__.__name__}")
-        # TODO
-        raise NotImplementedError
+        if self.__len__() == 0:
+            return other.copy()
+        if len(other) == 0:
+            return self.copy()
+        # zipper iterate
+        iter_self = iter(self)
+        iter_other = iter(other)
+        curr_self = next(iter_self)
+        curr_other = next(iter_other)
+        to_return = TreeSet()
+        while True:
+            # capture the state
+            are_equal = (curr_self == curr_other)
+            inc_self = (curr_self <= curr_other)
+            inc_other = (curr_self >= curr_other)
+            # act on it
+            if inc_self:
+                if not are_equal:
+                    to_return.add(curr_self)
+                try:
+                    curr_self = next(iter_self)
+                except StopIteration:
+                    leftovers = iter_other
+                    break
+            if inc_other:
+                if not are_equal:
+                    to_return.add(curr_other)
+                try:
+                    curr_other = next(iter_other)
+                except StopIteration:
+                    leftovers = iter_self
+                    break
+        # copy the remaining things from leftovers
+        try:
+            while True:
+                to_return.add(next(leftovers))
+        except StopIteration:
+            pass
+        return to_return
 
     def copy(self) -> "TreeSet[T]":
         to_return = TreeSet(self)
