@@ -265,7 +265,9 @@ class TreeSet(Generic[T]):
         # copy the remaining things from leftovers
         try:
             while True:
-                to_return.add(next(leftovers))
+                # pylint: disable=used-before-assignment
+                elem = next(leftovers)
+                to_return.add(elem)
         except StopIteration:
             pass
         return to_return
@@ -302,7 +304,7 @@ class TreeSet(Generic[T]):
             self.clear()
             return
         overlap = self.intersection(*others)
-        self._map = overlap._map
+        self._map = overlap._map  # pylint: disable=protected-access
 
     def __iand__(self, other: "TreeSet[T]"):
         if not isinstance(other, TreeSet):
