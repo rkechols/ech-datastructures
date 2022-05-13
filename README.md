@@ -16,7 +16,7 @@ Comprehensive package of Python-native datastructures.
 
 ### Implemented Datastructures:
   - Heap (AKA priority queue)
-  - TreeMap - **in progress**
+  - TreeMap
 
 
 ### Will Not Implement:
