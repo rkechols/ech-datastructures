@@ -515,15 +515,11 @@ class TreeMap(MappingABC, Generic[K, V]):
         None
         """
         try:
-            if self._root is None:
-                raise KeyError(key)
-            result = self._root.remove(key)
+            result = self.pop(key)
         except KeyError:
             # pylint: disable=raise-missing-from
             raise KeyError(key)
-        else:
-            self._count -= 1
-            return result
+        return result
 
     def __eq__(self, other: Any) -> bool:
         """
