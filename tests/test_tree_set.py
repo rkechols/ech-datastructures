@@ -1,5 +1,5 @@
-from typing import List, Set
 import random
+from typing import List, Set
 
 import pytest
 
@@ -320,6 +320,9 @@ def test_xor_positive():
     result = list(tree1 ^ tree2)
     assert result == list(tree2 ^ tree1)
     assert result == [1, 2, 3, 6, 8]
+
+
+# TODO: more tests
 
 
 def assert_equivalence(tree: TreeSet, hash_set: Set):
