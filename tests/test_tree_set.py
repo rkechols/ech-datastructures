@@ -1,4 +1,5 @@
-from typing import List
+from typing import List, Set
+import random
 
 import pytest
 
@@ -17,8 +18,8 @@ def tree_filled(nums: List[int]) -> TreeSet[int]:
 
 def assert_empty(tree: TreeSet):
     assert len(tree) == 0
-    for _ in tree:
-        pytest.fail("should not enter loop when iterating over empty TreeSet")
+    for x in tree:
+        pytest.fail(f"should not enter loop when iterating over empty TreeSet ({x})")
     with pytest.raises(KeyError):
         tree.remove(5)
     with pytest.raises(KeyError):
@@ -319,3 +320,32 @@ def test_xor_positive():
     result = list(tree1 ^ tree2)
     assert result == list(tree2 ^ tree1)
     assert result == [1, 2, 3, 6, 8]
+
+
+def assert_equivalence(tree: TreeSet, hash_set: Set):
+    assert list(tree) == sorted(hash_set)
+
+
+def test_random_set_parity():
+    random.seed(42)
+    n_trials = 500
+    options = list(range(10))
+    for trial_num in range(n_trials):
+        starters = random.sample(options, k=random.randrange(10))
+        tree = TreeSet(starters)
+        hash_set = set(starters)
+        assert_equivalence(tree, hash_set)
+        for step_num in range(random.randrange(5, 20)):
+            val = random.choice(options)
+            if random.random() < 0.5:
+                tree.add(val)
+                hash_set.add(val)
+            else:
+                tree.discard(val)
+                hash_set.discard(val)
+            assert_equivalence(tree, hash_set)
+        for _ in range(len(tree)):
+            removed = tree.pop()
+            hash_set.remove(removed)
+            assert_equivalence(tree, hash_set)
+        assert_empty(tree)
