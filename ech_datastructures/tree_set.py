@@ -291,43 +291,61 @@ class TreeSet(Generic[T]):
     def update(self, *others: Iterable[Iterable[T]]):
         for other in others:
             for elem in other:
-                self._map[elem] = None
+                self.add(elem)
 
     def __ior__(self, other: "TreeSet[T]"):
         if not isinstance(other, TreeSet):
             raise ValueError(f"`other` must be a TreeSet, but was {other.__class__.__name__}")
-        # TODO
-        raise NotImplementedError
+        self.update(other)
 
     def intersection_update(self, *others: Iterable[Iterable[T]]):
-        # TODO
-        raise NotImplementedError
+        if self.__len__() == 0:
+            self.clear()
+            return
+        overlap = self.intersection(*others)
+        self._map = overlap._map
 
     def __iand__(self, other: "TreeSet[T]"):
         if not isinstance(other, TreeSet):
             raise ValueError(f"`other` must be a TreeSet, but was {other.__class__.__name__}")
-        # TODO
-        raise NotImplementedError
+        if self.__len__() == 0 or len(other) == 0:
+            self.clear()
+            return
+        overlap = self.__and__(other)
+        self._map = overlap._map
 
     def difference_update(self, *others: Iterable[Iterable[T]]):
-        # TODO
-        raise NotImplementedError
+        if self.__len__() == 0:
+            return
+        for other in others:
+            for elem in other:
+                self.discard(elem)
 
     def __isub__(self, other: "TreeSet[T]"):
         if not isinstance(other, TreeSet):
             raise ValueError(f"`other` must be a TreeSet, but was {other.__class__.__name__}")
-        # TODO
-        raise NotImplementedError
+        if self.__len__() == 0 or len(other) == 0:
+            return
+        for elem in other:
+            self.discard(elem)
 
     def symmetric_difference_update(self, other: Iterable[T]):
-        # TODO
-        raise NotImplementedError
+        for elem in other:
+            if elem in self:
+                self.remove(elem)
+            else:
+                self.add(elem)
 
     def __ixor__(self, other: "TreeSet[T]"):
         if not isinstance(other, TreeSet):
             raise ValueError(f"`other` must be a TreeSet, but was {other.__class__.__name__}")
-        # TODO
-        raise NotImplementedError
+        if self.__len__() == 0:
+            self.update(other)
+            return
+        if len(other) == 0:
+            return
+        differences = self ^ other
+        self._map = differences._map
 
     def add(self, elem: T):
         self._map[elem] = None
