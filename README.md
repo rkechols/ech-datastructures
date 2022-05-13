@@ -7,7 +7,6 @@ Comprehensive package of Python-native datastructures.
 
 
 ### Planned Datastructures:
-  - tree set
   - ordered list (?) = binary tree with duplicates (counts)
   - trie
   - disjoint set (forest)
@@ -17,6 +16,7 @@ Comprehensive package of Python-native datastructures.
 ### Implemented Datastructures:
   - Heap (AKA priority queue)
   - TreeMap
+  - TreeSet - **in progress**
 
 
 ### Will Not Implement:
