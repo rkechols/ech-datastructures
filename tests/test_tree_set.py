@@ -228,6 +228,88 @@ def test_issuperset_negative_disjoint():
     assert not tree2.issuperset(tree1)
 
 
+def test_ge_both_empty():
+    tree1 = TreeSet()
+    tree2 = TreeSet()
+    assert tree1 >= tree2
+    assert tree2 >= tree1
+
+
+def test_ge_one_empty(tree_filled: TreeSet[int]):
+    tree_empty = TreeSet()
+    assert not tree_empty >= tree_filled
+    assert tree_filled >= tree_empty
+
+
+def test_ge_equal(nums: List[int]):
+    tree1 = TreeSet(nums)
+    tree2 = TreeSet(nums)
+    assert tree1 >= tree2
+    assert tree2 >= tree1
+
+
+def test_ge_positive():
+    tree1 = TreeSet([3, 4, 7, 8])
+    tree2 = TreeSet([1, 3, 4, 6, 7, 8, 9])
+    assert not tree1 >= tree2
+    assert tree2 >= tree1
+
+
+def test_ge_negative_overlap():
+    tree1 = TreeSet([2, 3, 4, 5, 7, 8])
+    tree2 = TreeSet([1, 3, 4, 6, 7, 8, 9])
+    assert not tree1 >= tree2
+    assert not tree2 >= tree1
+
+
+def test_ge_negative_disjoint():
+    tree1 = TreeSet([1, 2, 3])
+    tree2 = TreeSet([5, 6, 7, 8])
+    assert not tree1 >= tree2
+    assert not tree2 >= tree1
+
+
+def test_gt_both_empty():
+    tree1 = TreeSet()
+    tree2 = TreeSet()
+    assert not tree1 > tree2
+    assert not tree2 > tree1
+
+
+def test_gt_one_empty(tree_filled: TreeSet[int]):
+    tree_empty = TreeSet()
+    assert not tree_empty > tree_filled
+    assert tree_filled > tree_empty
+
+
+def test_gt_equal(nums: List[int]):
+    tree1 = TreeSet(nums)
+    tree2 = TreeSet(nums)
+    assert not tree1 > tree2
+    assert not tree2 > tree1
+
+
+def test_gt_positive():
+    tree1 = TreeSet([3, 4, 7, 8])
+    tree2 = TreeSet([1, 3, 4, 6, 7, 8, 9])
+    assert not tree1 > tree2
+    assert tree2 > tree1
+
+
+def test_gt_negative_overlap():
+    tree1 = TreeSet([2, 3, 4, 5, 7, 8])
+    tree2 = TreeSet([1, 3, 4, 6, 7, 8, 9])
+    assert not tree1 > tree2
+    assert not tree2 > tree1
+
+
+def test_gt_negative_disjoint():
+    tree1 = TreeSet([1, 2, 3])
+    tree2 = TreeSet([5, 6, 7, 8])
+    assert not tree1 > tree2
+    assert not tree2 > tree1
+
+
 # TODO: more tests
 
 
