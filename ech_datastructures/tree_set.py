@@ -1,5 +1,4 @@
 from typing import Any, Generator, Generic, Iterable, TypeVar
-from itertools import chain
 
 from ech_datastructures.tree_map import TreeMap
 
