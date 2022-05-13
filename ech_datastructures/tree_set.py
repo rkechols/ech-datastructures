@@ -127,6 +127,8 @@ class TreeSet(Generic[T]):
         is_superset = self.__ge__(other)
         return is_superset and len(other) < self.__len__()
 
+    # TODO: below here need tests
+
     def union(self, *others: Iterable[Iterable[T]]) -> "TreeSet[T]":
         to_return = self.copy()
         to_return.update(others)
@@ -173,14 +175,47 @@ class TreeSet(Generic[T]):
         return to_return
 
     def difference(self, *others: Iterable[Iterable[T]]) -> "TreeSet[T]":
-        # TODO
-        raise NotImplementedError
+        if self.__len__() == 0:
+            return TreeSet()
+        to_return = self.copy()
+        for other in others:
+            for elem in other:
+                to_return.discard(elem)
+        return to_return
 
     def __sub__(self, other: "TreeSet[T]") -> "TreeSet[T]":
         if not isinstance(other, TreeSet):
             raise ValueError(f"`other` must be a TreeSet, but was {other.__class__.__name__}")
-        # TODO
-        raise NotImplementedError
+        if self.__len__() == 0:
+            return TreeSet()
+        if len(other) == 0:
+            return self.copy()
+        to_return = TreeSet()
+        iter_other = iter(other)
+        curr_other = next(iter_other)
+        add_all = False
+        for curr_self in self:
+            if add_all:
+                # `other` ran out, and we just need to finish copying `self
+                to_return.add(curr_self)
+                continue
+            # do the normal checks
+            try:
+                # catch up `other`
+                while curr_other < curr_self:
+                    curr_other = next(iter_other)
+            except StopIteration:
+                # `other` ran out before catching up
+                to_return.add(curr_self)
+                add_all = True
+                continue
+            if curr_other == curr_self:
+                pass  # overlap; don't add
+            else:  # curr_other > curr_self:
+                # `other` went right past `self`, no collision
+                # this value is not in `other`
+                to_return.add(curr_self)
+        return to_return
 
     def symmetric_difference(self, other: Iterable[T]) -> "TreeSet[T]":
         # TODO
